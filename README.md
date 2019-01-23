@@ -26,7 +26,8 @@ Other things to consider..
 
 First, I created a seperate DB to keep from messing up the SSRS DB:
 
-```use master
+```
+use master
 go
 
 create database distribution
@@ -43,7 +44,7 @@ NOTES:
 2. As a result, you'll notice contacts for reports are not associated with customers. This was intentional but not likely your use case.
 3. Customers are still in this example to demonstrate the `cobranding` piece. Our external reports can be cobranded with the top level customer's logo. By setting a report parameter, the report will load the appropriate logofile. Pretty cool stuff :)
 
-```schedules.sql```
+### schedules.sql
 
 In order for this use case to work, you need to pre-define some Shared Schedules in SSRS. These then need to be synced to the distribution database. I've created 4:
 
@@ -52,25 +53,25 @@ In order for this use case to work, you need to pre-define some Shared Schedules
 3. Weekly
 4. Monthly
 
-```reports.sql```
+### reports.sql
 
 The distribution database also needs to know a little bit about your SSRS Reports. Mainly the ID and Name (our front end process for interacting with all of this needs the Parameters).
 
-```formats.sql```
+### formats.sql
 
 This is me overthinking things probably. We like to send reports as Excel or PDF. I want CSV to get utilized as well. This table just staticly defines those format types.
 
-```customers.sql```
+### customers.sql
 
 This is where things really get specific to our use case..
 
 Reports are run against different codes and/or tags that ultimately get you to a decision of whether or not to cobrand the report, as well as a few other feature parameters stripped out of this example. But this requires getting data into the distribution database from the existing application database. In our use case, this server is home to the normalized, modeled application data for report purposes .. so that was easy!
 
-```contacts```
+### contacts.sql
 
 Like customers, contacts have options that set background parameters to dynamically alter reports (which has all been stripped from this example lol). Also, future self-service thought process, blah blah blah... oh, and these contacts aren't in our business application for .. reasons. So, this is also for our front end process to use.
 
-```subscriptions```
+### subscriptions.sql
 
 The ultimate goal is to associate a `schedule` with a `report`, with a report `format`, with report `parameters`, with an `email` address. That happens here and gets assigned an ID.
 
@@ -81,7 +82,7 @@ Then, I created a bunch of Stored Procedures (use the sql files in /storedproced
 
 NOTE: All Create, Get, and Update/Disable procs are currently being executed by a front end web portal not part of this example. Upsert procs are being handled by SQL Agent Jobs once per day. 
 
-```createsubscriptions.sql```
+### createsubscriptions.sql
 
 This is the MAGIC!
 
@@ -96,12 +97,8 @@ Once you populate the variables in this proc, you can call the CreateSubscriptio
 
 ## Contributing
 
-*Thank You*
+### Thank You
 
 I hope this helps others looking for a little bit of that data driven subscription fix :)
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-
-<!-- ## License
-[MIT](https://choosealicense.com/licenses/mit/) -->
+Pull requests are welcome.
