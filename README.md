@@ -24,7 +24,9 @@ Other things to consider..
 
 ## Usage
 
-First, I created a seperate DB to keep from messing up the SSRS DB:
+### First, I created a seperate DB ...
+
+... to keep from messing up the SSRS DB:
 
 ```
 use master
@@ -44,7 +46,7 @@ NOTES:
 2. As a result, you'll notice contacts for reports are not associated with customers. This was intentional but not likely your use case.
 3. Customers are still in this example to demonstrate the `cobranding` piece. Our external reports can be cobranded with the top level customer's logo. By setting a report parameter, the report will load the appropriate logofile. Pretty cool stuff :)
 
-### schedules.sql
+#### schedules.sql
 
 In order for this use case to work, you need to pre-define some Shared Schedules in SSRS. These then need to be synced to the distribution database. I've created 4:
 
@@ -53,36 +55,38 @@ In order for this use case to work, you need to pre-define some Shared Schedules
 3. Weekly
 4. Monthly
 
-### reports.sql
+#### reports.sql
 
 The distribution database also needs to know a little bit about your SSRS Reports. Mainly the ID and Name (our front end process for interacting with all of this needs the Parameters).
 
-### formats.sql
+#### formats.sql
 
 This is me overthinking things probably. We like to send reports as Excel or PDF. I want CSV to get utilized as well. This table just staticly defines those format types.
 
-### customers.sql
+#### customers.sql
 
 This is where things really get specific to our use case..
 
 Reports are run against different codes and/or tags that ultimately get you to a decision of whether or not to cobrand the report, as well as a few other feature parameters stripped out of this example. But this requires getting data into the distribution database from the existing application database. In our use case, this server is home to the normalized, modeled application data for report purposes .. so that was easy!
 
-### contacts.sql
+#### contacts.sql
 
 Like customers, contacts have options that set background parameters to dynamically alter reports (which has all been stripped from this example lol). Also, future self-service thought process, blah blah blah... oh, and these contacts aren't in our business application for .. reasons. So, this is also for our front end process to use.
 
-### subscriptions.sql
+#### subscriptions.sql
 
 The ultimate goal is to associate a `schedule` with a `report`, with a report `format`, with report `parameters`, with an `email` address. That happens here and gets assigned an ID.
 
 
-Then, I created a bunch of Stored Procedures (use the sql files in /storedprocedures/*.sql):
+### Then, I created a bunch of Stored Procedures ...
+
+... (use the sql files in /storedprocedures/*.sql):
 
 `createcontacts.sql`, `createsubscriptions.sql`, `disablesubscriptions.sql`, `getcontacts.sql`, `getcustomers.sql`, `getformats.sql`, `getreports.sql`, `getschedules.sql`, `getsubscriptions.sql`, `updatecontacts.sql`, `upsertcustomers.sql`, `upsertreports.sql`, `upsertschedules.sql`
 
 NOTE: All Create, Get, and Update/Disable procs are currently being executed by a front end web portal not part of this example. Upsert procs are being handled by SQL Agent Jobs once per day. 
 
-### createsubscriptions.sql
+#### createsubscriptions.sql
 
 This is the MAGIC!
 
@@ -95,9 +99,14 @@ Building the Parametes XML string sets all of your report parameters. This shoul
 Once you populate the variables in this proc, you can call the CreateSubscription proc in the SSRS reporting DB, _and then_ associate the SSRS SQL Agent Job that fires off the subscription using the ReportSchedule table, and finally save a copy of all that in the distribution DB. 
 
 
+### Finally, I reached out to a friend ...
+
+... to get a quick front end up and running to play with these Stored Procedures. But, he's not done yet, and I don't know how easy I'll be able to share it, so you're on your own for that part .. for now :)
+
+
 ## Contributing
 
-### Thank You
+### Thank You!
 
 I hope this helps others looking for a little bit of that data driven subscription fix :)
 
